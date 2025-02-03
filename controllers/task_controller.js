@@ -18,19 +18,42 @@ const createTask = async(req,res)=>{
     
 }
 
-const getTaskbyId = (req,res)=>{
-    console.log("This is get task by id");
-    res.send("get a task")
+const getTaskbyId = async (req,res)=>{
+    try {
+        const task = await Task.findOne({_id: req.params.id });
+        if(!task) return res.status(404).json({msg:"The task is not found"})
+        res.status(200).json({task})
+    } catch (error) {
+        res.status(500).json({error}) 
+    }
 }
 
-const updateTaskById = (req,res)=>{
-    console.log("This is update task by id");
-    res.send("update a task")
+const updateTaskById = async (req,res)=>{
+    try {
+        const task = await Task.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {
+                new:true, //retuen update task
+                runValidators : true //validate
+            }
+        )
+        if(!task) return res.status(404).json({msg:"The item is not available"})
+        res.status(200).json({task})
+    } catch (error) {
+        res.status(500).json({error})
+        
+    }
 }
 
-const deleteTaskById = (req,res)=>{
-    console.log("this is delete task by id");
-    res.send("delete a task")
+const deleteTaskById = async(req,res)=>{
+    try {
+        const task = await Task.findByIdAndDelete(req.params.id)
+        if(!task) return res.status(404).json({msg:"The task is not available"})
+        res.status(200).json({task})
+    } catch (error) {
+        res.status(500).json({error})
+    }
 }
 module.exports = {
     getAlltasks,
